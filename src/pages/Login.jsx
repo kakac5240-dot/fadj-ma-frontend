@@ -1221,6 +1221,25 @@ export function MedicineDetail() {
 
         )}
 
+
+        {/* DOSAGE ET POSOLOGIE */}
+
+        {medicine.dosage_posologie && (
+
+          <div className="mt-8">
+
+            <h2 className="text-xl font-bold mb-2">
+              Dosage et posologie :
+            </h2>
+
+            <p className="text-gray-700 whitespace-pre-line">
+              {medicine.dosage_posologie}
+            </p>
+
+          </div>
+
+        )}
+
       </div>
 
     </Layout>
