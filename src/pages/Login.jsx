@@ -217,7 +217,7 @@ export function Dashboard() {
           {/* Inventaire */}
           <div className="bg-white border-2 border-green-400 rounded overflow-hidden">
             <div className="p-4">
-              <p className="text-2xl mb-2">🛡️</p>
+              <img src="https://fadj-ma-api.onrender.com/images/icon-inventaire.png" alt="" className="w-8 h-8 mb-2" />
 
               <p className="text-xl font-bold">
                 Bien
@@ -236,7 +236,7 @@ export function Dashboard() {
           {/* Revenu */}
           <div className="bg-white border-2 border-yellow-400 rounded overflow-hidden">
             <div className="p-4">
-              <p className="text-2xl mb-2">💰</p>
+              <img src="https://fadj-ma-api.onrender.com/images/icon-revenu.png" alt="" className="w-8 h-8 mb-2" />
 
               <p className="text-xl font-bold">
                 4.800.432 FCFA
@@ -255,7 +255,7 @@ export function Dashboard() {
           {/* Médicaments */}
           <div className="bg-white border-2 border-blue-400 rounded overflow-hidden">
             <div className="p-4">
-              <p className="text-2xl mb-2">💊</p>
+              <img src="https://fadj-ma-api.onrender.com/images/icon-medicaments.png" alt="" className="w-8 h-8 mb-2" />
 
               <p className="text-xl font-bold">
                 298

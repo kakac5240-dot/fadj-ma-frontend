@@ -1,17 +1,5 @@
 import { Link, useNavigate, useLocation } from 'react-router-dom';
 
-function LogoIcon() {
-  return (
-    <svg width="28" height="28" viewBox="0 0 28 28" fill="none">
-      <rect width="28" height="28" rx="6" fill="#14b8a6" />
-      <path d="M6 8h2l1 9a2 2 0 0 0 2 2h7a2 2 0 0 0 2-2l1-6H9" stroke="white" strokeWidth="1.8" strokeLinecap="round" strokeLinejoin="round" fill="none" />
-      <circle cx="11" cy="21" r="1.3" fill="white" />
-      <circle cx="18" cy="21" r="1.3" fill="white" />
-      <path d="M20 6v4M18 8h4" stroke="white" strokeWidth="1.8" strokeLinecap="round" />
-    </svg>
-  );
-}
-
 function DashboardIcon({ active }) {
   const color = active ? 'white' : '#9ca3af';
   return (
@@ -63,7 +51,8 @@ export function Layout({ children }) {
     <div className="flex h-screen bg-gray-100">
       <aside className="w-64 bg-slate-800 flex flex-col">
         <div className="flex items-center gap-2 p-5 text-white font-bold text-lg">
-          <LogoIcon /> Fadj-Ma
+          <img src="https://fadj-ma-api.onrender.com/images/logo-fadjma.png" alt="Fadj-Ma" className="w-8 h-8" />
+          Fadj-Ma
         </div>
 
         <div className="flex items-center gap-3 px-4 py-3 border-y border-slate-700">
@@ -71,7 +60,7 @@ export function Layout({ children }) {
             MF
           </div>
           <div>
-            <p className="text-white text-sm font-medium">Modou Fall</p>
+            <p className="text-white text-sm font-medium">Kaka Correa </p>
             <p className="text-teal-400 text-xs">Administrateur</p>
           </div>
         </div>
