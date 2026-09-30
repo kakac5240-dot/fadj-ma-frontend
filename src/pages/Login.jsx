@@ -212,6 +212,30 @@ function telechargerRapport(stats) {
 }
 
 export function Dashboard() {
+  function CountUp({ end, duration = 1200, pad = 0 }) {
+  const [value, setValue] = useState(0);
+
+  useEffect(() => {
+    let startTime = null;
+    let frame;
+
+    const step = (timestamp) => {
+      if (!startTime) startTime = timestamp;
+      const progress = Math.min((timestamp - startTime) / duration, 1);
+      setValue(Math.floor(progress * end));
+      if (progress < 1) frame = requestAnimationFrame(step);
+    };
+
+    frame = requestAnimationFrame(step);
+    return () => cancelAnimationFrame(frame);
+  }, [end, duration]);
+
+  const formatted = pad
+    ? String(value).padStart(pad, '0')
+    : value.toLocaleString('fr-FR').replace(/\s/g, '.');
+
+  return <>{formatted}</>;
+}
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
@@ -246,7 +270,7 @@ export function Dashboard() {
           <div className="bg-white border-2 border-yellow-400 rounded overflow-hidden">
             <div className="p-4">
               <img src="https://fadj-ma-api.onrender.com/images/icon-revenu.png" alt="" className="w-8 h-8 mb-2" />
-              <p className="text-xl font-bold">4.800.432 FCFA</p>
+              <p className="text-xl font-bold"><CountUp end={4800432} /> FCFA</p>
               <p className="text-sm text-gray-500">Revenu : janvier 2022</p>
             </div>
             <div className="bg-yellow-100 text-yellow-700 text-sm px-4 py-2">Afficher le rapport detaille »</div>
@@ -255,7 +279,7 @@ export function Dashboard() {
           <div className="bg-white border-2 border-blue-400 rounded overflow-hidden">
             <div className="p-4">
               <img src="https://fadj-ma-api.onrender.com/images/icon-medicaments.png" alt="" className="w-8 h-8 mb-2" />
-              <p className="text-xl font-bold">298</p>
+              <p className="text-xl font-bold"><CountUp end={298} /></p>
               <p className="text-sm text-gray-500">Medicaments disponibles</p>
             </div>
             <div className="bg-blue-100 text-blue-700 text-sm px-4 py-2">Visiter l'inventaire »</div>
@@ -279,11 +303,11 @@ export function Dashboard() {
             </div>
             <div className="flex gap-20">
               <div>
-                <p className="text-2xl font-bold">298</p>
+                <p className="text-2xl font-bold"><CountUp end={298} /></p>
                 <p className="text-sm text-gray-500">Nombre total de medicaments</p>
               </div>
               <div>
-                <p className="text-2xl font-bold">24</p>
+                <p className="text-2xl font-bold"><CountUp end={24} /></p>
                 <p className="text-sm text-gray-500">Groupes de medecine</p>
               </div>
             </div>
@@ -296,11 +320,11 @@ export function Dashboard() {
             </div>
             <div className="flex gap-20">
               <div>
-                <p className="text-2xl font-bold">70 856</p>
+                <p className="text-2xl font-bold"><CountUp end={70856} /></p>
                 <p className="text-sm text-gray-500">Quantite de medicaments vendus</p>
               </div>
               <div>
-                <p className="text-2xl font-bold">5 288</p>
+                <p className="text-2xl font-bold"><CountUp end={5288} /></p>
                 <p className="text-sm text-gray-500">Factures generees</p>
               </div>
             </div>
@@ -313,11 +337,11 @@ export function Dashboard() {
             </div>
             <div className="flex gap-20">
               <div>
-                <p className="text-2xl font-bold">04</p>
+                <p className="text-2xl font-bold"><CountUp end={4} pad={2} /></p>
                 <p className="text-sm text-gray-500">Nombre total de fournisseurs</p>
               </div>
               <div>
-                <p className="text-2xl font-bold">05</p>
+                <p className="text-2xl font-bold"><CountUp end={5} pad={2} /></p>
                 <p className="text-sm text-gray-500">Nombre total d'utilisateurs</p>
               </div>
             </div>
@@ -330,7 +354,7 @@ export function Dashboard() {
             </div>
             <div className="flex gap-20">
               <div>
-                <p className="text-2xl font-bold">845</p>
+                <p className="text-2xl font-bold"><CountUp end={845} /></p>
                 <p className="text-sm text-gray-500">Nombre total de clients</p>
               </div>
               <div>
