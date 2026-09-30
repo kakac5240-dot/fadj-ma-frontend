@@ -220,14 +220,6 @@ export function Dashboard() {
       .catch((err) => console.error(err));
   }, []);
 
-  if (!stats) {
-    return (
-      <Layout>
-        <p className="p-8">Chargement...</p>
-      </Layout>
-    );
-  }
-
   return (
     <Layout>
       <div className="p-8">
@@ -236,7 +228,7 @@ export function Dashboard() {
             <h1 className="text-2xl font-bold mb-1">Tableau de bord</h1>
             <p className="text-gray-500">Un apercu rapide des donnees de votre pharmacie</p>
           </div>
-          <button onClick={() => telechargerRapport(stats)} className="border rounded px-4 py-2 bg-white">
+          <button onClick={() => stats && telechargerRapport(stats)} className="border rounded px-4 py-2 bg-white">
             Telecharger le rapport
           </button>
         </div>
@@ -245,7 +237,7 @@ export function Dashboard() {
           <div className="bg-white border-2 border-green-400 rounded overflow-hidden">
             <div className="p-4">
               <img src="https://fadj-ma-api.onrender.com/images/icon-inventaire.png" alt="" className="w-8 h-8 mb-2" />
-              <p className="text-xl font-bold">{stats.statutInventaire}</p>
+              <p className="text-xl font-bold">Bien</p>
               <p className="text-sm text-gray-500">Statut de l'inventaire</p>
             </div>
             <div className="bg-green-100 text-green-700 text-sm px-4 py-2">Afficher le rapport detaille »</div>
@@ -254,8 +246,8 @@ export function Dashboard() {
           <div className="bg-white border-2 border-yellow-400 rounded overflow-hidden">
             <div className="p-4">
               <img src="https://fadj-ma-api.onrender.com/images/icon-revenu.png" alt="" className="w-8 h-8 mb-2" />
-              <p className="text-xl font-bold">{stats.revenuMois} FCFA</p>
-              <p className="text-sm text-gray-500">Revenu</p>
+              <p className="text-xl font-bold">4.800.432 FCFA</p>
+              <p className="text-sm text-gray-500">Revenu : janvier 2022</p>
             </div>
             <div className="bg-yellow-100 text-yellow-700 text-sm px-4 py-2">Afficher le rapport detaille »</div>
           </div>
@@ -263,7 +255,7 @@ export function Dashboard() {
           <div className="bg-white border-2 border-blue-400 rounded overflow-hidden">
             <div className="p-4">
               <img src="https://fadj-ma-api.onrender.com/images/icon-medicaments.png" alt="" className="w-8 h-8 mb-2" />
-              <p className="text-xl font-bold">{stats.medicamentsDisponibles}</p>
+              <p className="text-xl font-bold">298</p>
               <p className="text-sm text-gray-500">Medicaments disponibles</p>
             </div>
             <div className="bg-blue-100 text-blue-700 text-sm px-4 py-2">Visiter l'inventaire »</div>
@@ -272,7 +264,7 @@ export function Dashboard() {
           <div className="bg-white border-2 border-red-400 rounded overflow-hidden">
             <div className="p-4">
               <p className="text-2xl mb-2">⚠️</p>
-              <p className="text-xl font-bold">{stats.penurieMedicaments}</p>
+              <p className="text-xl font-bold">01</p>
               <p className="text-sm text-gray-500">Penurie de medicaments</p>
             </div>
             <div className="bg-red-100 text-red-700 text-sm px-4 py-2">Resoudre maintenant »</div>
@@ -285,13 +277,13 @@ export function Dashboard() {
               <h2 className="font-semibold">Inventaire</h2>
               <span className="text-sm text-gray-500">Allez dans Configuration »</span>
             </div>
-            <div className="flex gap-10">
+            <div className="flex gap-20">
               <div>
-                <p className="text-2xl font-bold">{stats.medicamentsDisponibles}</p>
+                <p className="text-2xl font-bold">298</p>
                 <p className="text-sm text-gray-500">Nombre total de medicaments</p>
               </div>
               <div>
-                <p className="text-2xl font-bold">-</p>
+                <p className="text-2xl font-bold">24</p>
                 <p className="text-sm text-gray-500">Groupes de medecine</p>
               </div>
             </div>
@@ -300,15 +292,15 @@ export function Dashboard() {
           <div className="bg-white rounded shadow p-5">
             <div className="flex justify-between mb-4">
               <h2 className="font-semibold">Rapport rapide</h2>
-              <span className="text-sm text-gray-500">Ce mois</span>
+              <span className="text-sm text-gray-500">Janvier 2022</span>
             </div>
-            <div className="flex gap-10">
+            <div className="flex gap-20">
               <div>
-                <p className="text-2xl font-bold">-</p>
+                <p className="text-2xl font-bold">70 856</p>
                 <p className="text-sm text-gray-500">Quantite de medicaments vendus</p>
               </div>
               <div>
-                <p className="text-2xl font-bold">{stats.facturesGenerees}</p>
+                <p className="text-2xl font-bold">5 288</p>
                 <p className="text-sm text-gray-500">Factures generees</p>
               </div>
             </div>
@@ -319,13 +311,13 @@ export function Dashboard() {
               <h2 className="font-semibold">Ma pharmacie</h2>
               <span className="text-sm text-gray-500">Accedez a la gestion des utilisateurs »</span>
             </div>
-            <div className="flex gap-10">
+            <div className="flex gap-20">
               <div>
-                <p className="text-2xl font-bold">{stats.totalFournisseurs}</p>
+                <p className="text-2xl font-bold">04</p>
                 <p className="text-sm text-gray-500">Nombre total de fournisseurs</p>
               </div>
               <div>
-                <p className="text-2xl font-bold">-</p>
+                <p className="text-2xl font-bold">05</p>
                 <p className="text-sm text-gray-500">Nombre total d'utilisateurs</p>
               </div>
             </div>
@@ -336,14 +328,14 @@ export function Dashboard() {
               <h2 className="font-semibold">Clients</h2>
               <span className="text-sm text-gray-500">Aller a la page clients »</span>
             </div>
-            <div className="flex gap-10">
+            <div className="flex gap-20">
               <div>
-                <p className="text-2xl font-bold">{stats.totalClients}</p>
+                <p className="text-2xl font-bold">845</p>
                 <p className="text-sm text-gray-500">Nombre total de clients</p>
               </div>
               <div>
-                <p className="text-2xl font-bold">-</p>
-                <p className="text-sm text-gray-500">Article frequemment...</p>
+                <p className="text-2xl font-bold">Adalimumab</p>
+                <p className="text-sm text-gray-500">Article frequemment vendu</p>
               </div>
             </div>
           </div>
@@ -352,7 +344,6 @@ export function Dashboard() {
     </Layout>
   );
 }
-
 export function Medicines() {
   const [medicines, setMedicines] = useState([]);
   const [groups, setGroups] = useState([]);
