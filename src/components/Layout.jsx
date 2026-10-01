@@ -57,7 +57,7 @@ export function Layout({ children }) {
 
         <div className="flex items-center gap-3 px-4 py-3 border-y border-slate-700">
           <div className="w-9 h-9 rounded-full bg-slate-500 flex items-center justify-center text-white text-sm">
-            MF
+            KC
           </div>
           <div>
             <p className="text-white text-sm font-medium">Kaka Correa </p>
