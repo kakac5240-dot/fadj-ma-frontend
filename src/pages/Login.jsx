@@ -89,28 +89,21 @@ export function Register() {
   const [mois, setMois] = useState('');
   const [annee, setAnnee] = useState('');
   const [email, setEmail] = useState('');
-  const [password, setPassword] = useState('');
-  const [confirmPassword, setConfirmPassword] = useState('');
   const [error, setError] = useState('');
+  const [success, setSuccess] = useState(false);
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
-    if (password !== confirmPassword) {
-      setError('Les mots de passe ne correspondent pas');
-      return;
-    }
-
     try {
       await axios.post(`${API_URL}/auth/register`, {
         name: `${prenom} ${name}`,
         email,
-        password,
         genre,
         date_naissance: jour && mois && annee ? `${jour}/${mois}/${annee}` : null
       });
-      navigate('/');
+      setSuccess(true);
+      setTimeout(() => navigate('/'), 2500);
     } catch (err) {
       setError(err.response?.data?.message || "Erreur lors de l'inscription");
     }
@@ -122,6 +115,11 @@ export function Register() {
         <AuthHeader active="register" />
         <form onSubmit={handleSubmit} className="p-8">
           {error && <p className="text-red-500 mb-3">{error}</p>}
+          {success && (
+            <p className="text-green-600 mb-3">
+              Compte cree ! Votre mot de passe a ete envoye par email. Redirection...
+            </p>
+          )}
 
           <p className="font-medium mb-2">Vos coordonnees</p>
           <div className="flex gap-6 mb-4">
@@ -162,24 +160,17 @@ export function Register() {
             </select>
           </div>
 
-          <div className="grid grid-cols-2 gap-4 mb-4">
-            <div>
-              <label className="block font-medium mb-1">E-mail</label>
-              <input type="email" value={email} onChange={(e) => setEmail(e.target.value)} className="border p-2 w-full rounded" />
-            </div>
-            <div>
-              <label className="block font-medium mb-1">Mot de passe</label>
-              <input type="password" value={password} onChange={(e) => setPassword(e.target.value)} className="border p-2 w-full rounded" />
-            </div>
-          </div>
-
-          <label className="block font-medium mb-1">Confirmer</label>
+          <label className="block font-medium mb-1">E-mail</label>
           <input
-            type="password"
-            value={confirmPassword}
-            onChange={(e) => setConfirmPassword(e.target.value)}
+            type="email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
             className="border p-2 w-full mb-4 rounded"
           />
+
+          <p className="text-sm text-gray-500 mb-4">
+            Un mot de passe temporaire vous sera envoye par email.
+          </p>
 
           <button type="submit" className="bg-teal-400 text-slate-900 font-medium w-full py-2 rounded">
             S'inscrire
@@ -189,7 +180,6 @@ export function Register() {
     </div>
   );
 }
-
 function telechargerRapport(stats) {
   const lignes = [
     ['Indicateur', 'Valeur'],

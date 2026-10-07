@@ -1,5 +1,6 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Login, Register, Dashboard, Medicines, MedicineDetail, NewMedicine, EditMedicine } from './pages/Login';
+import { Login, Register, Dashboard, Medicines, MedicineDetail, EditMedicine, NewMedicine } from './pages/Login';
+import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
   return (
@@ -7,11 +8,11 @@ function App() {
       <Routes>
         <Route path="/" element={<Login />} />
         <Route path="/register" element={<Register />} />
-        <Route path="/dashboard" element={<Dashboard />} />
-        <Route path="/medicines" element={<Medicines />} />
-        <Route path="/medicines/:id" element={<MedicineDetail />} />
-        <Route path="/medicines/:id/edit" element={<EditMedicine />} />
-        <Route path="/medicines/new" element={<NewMedicine />} />
+        <Route path="/dashboard" element={<ProtectedRoute><Dashboard /></ProtectedRoute>} />
+        <Route path="/medicines" element={<ProtectedRoute><Medicines /></ProtectedRoute>} />
+        <Route path="/medicines/:id" element={<ProtectedRoute><MedicineDetail /></ProtectedRoute>} />
+        <Route path="/medicines/:id/edit" element={<ProtectedRoute><EditMedicine /></ProtectedRoute>} />
+        <Route path="/medicines/new" element={<ProtectedRoute><NewMedicine /></ProtectedRoute>} />
       </Routes>
     </BrowserRouter>
   );
