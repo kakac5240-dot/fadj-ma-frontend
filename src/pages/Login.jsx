@@ -466,7 +466,12 @@ export function Medicines() {
                 <td className="p-3">{medicine.code_medicament}</td>
                 <td className="p-3">{medicine.group ? medicine.group.nom : '-'}</td>
                 <td className="p-3 flex items-center gap-3">
-  <Link to={`/medicines/${medicine.id}`} className="text-teal-600" title="Voir details">👁️</Link>
+  <Link
+  to={`/medicines/${medicine.id}`}
+  className="text-teal-600 hover:underline font-medium"
+>
+  Voir détails
+  </Link>
   <button onClick={() => navigate(`/medicines/${medicine.id}/edit`)} className="text-blue-600" title="Modifier">✏️</button>
   <button onClick={() => handleDelete(medicine.id)} className="text-red-600" title="Supprimer">🗑️</button>
 </td>
