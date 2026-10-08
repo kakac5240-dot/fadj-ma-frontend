@@ -1,4 +1,8 @@
+import { useState, useEffect, useRef } from 'react';
 import { Link, useNavigate, useLocation } from 'react-router-dom';
+import axios from 'axios';
+
+const API_URL = 'https://fadj-ma-api.onrender.com/api';
 
 function DashboardIcon({ active }) {
   const color = active ? 'white' : '#9ca3af';
@@ -36,6 +40,30 @@ function LogoutIcon() {
 export function Layout({ children }) {
   const navigate = useNavigate();
   const location = useLocation();
+  const [search, setSearch] = useState('');
+  const [allMedicines, setAllMedicines] = useState([]);
+  const [showResults, setShowResults] = useState(false);
+  const boxRef = useRef(null);
+
+  useEffect(() => {
+    axios.get(`${API_URL}/medicines`)
+      .then((res) => setAllMedicines(res.data))
+      .catch(() => {});
+  }, []);
+
+  useEffect(() => {
+    const handleClickOutside = (e) => {
+      if (boxRef.current && !boxRef.current.contains(e.target)) {
+        setShowResults(false);
+      }
+    };
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => document.removeEventListener('mousedown', handleClickOutside);
+  }, []);
+
+  const results = search.length > 0
+    ? allMedicines.filter((m) => m.nom.toLowerCase().includes(search.toLowerCase())).slice(0, 6)
+    : [];
 
   const handleLogout = () => {
     localStorage.removeItem('token');
@@ -60,7 +88,7 @@ export function Layout({ children }) {
             KC
           </div>
           <div>
-            <p className="text-white text-sm font-medium">Kaka Correa </p>
+            <p className="text-white text-sm font-medium">Kaka Correa</p>
             <p className="text-teal-400 text-xs">Administrateur</p>
           </div>
         </div>
@@ -83,11 +111,33 @@ export function Layout({ children }) {
 
       <div className="flex-1 flex flex-col overflow-y-auto">
         <header className="bg-white shadow px-6 py-4 flex justify-between items-center">
-          <input
-            type="text"
-            placeholder="Recherchez n'importe quoi ici."
-            className="border rounded px-4 py-2 w-96"
-          />
+          <div className="relative w-96" ref={boxRef}>
+            <input
+              type="text"
+              placeholder="Recherchez n'importe quoi ici."
+              value={search}
+              onChange={(e) => { setSearch(e.target.value); setShowResults(true); }}
+              onFocus={() => setShowResults(true)}
+              className="border rounded px-4 py-2 w-full"
+            />
+            {showResults && results.length > 0 && (
+              <div className="absolute top-full left-0 right-0 bg-white border rounded shadow mt-1 z-10">
+                {results.map((m) => (
+                  <div
+                    key={m.id}
+                    onClick={() => {
+                      setSearch('');
+                      setShowResults(false);
+                      navigate(`/medicines/${m.id}`);
+                    }}
+                    className="px-4 py-2 hover:bg-gray-100 cursor-pointer text-sm"
+                  >
+                    {m.nom}
+                  </div>
+                ))}
+              </div>
+            )}
+          </div>
           <div className="flex items-center gap-4 text-sm text-gray-600">
             <span>Francais (France)</span>
             <span>☀️ Bonjour</span>
