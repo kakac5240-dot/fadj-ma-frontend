@@ -484,40 +484,51 @@ export function Medicines() {
   );
 }
 
+
 export function MedicineDetail() {
   const { id } = useParams();
   const [medicine, setMedicine] = useState(null);
   const [medicines, setMedicines] = useState([]);
+  const [showDeleteModal, setShowDeleteModal] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+
   const navigate = useNavigate();
 
-  const IMAGE_URL = 'https://fadj-ma-api.onrender.com';
+  const IMAGE_URL = "https://fadj-ma-api.onrender.com";
 
   useEffect(() => {
-    axios.get(`${API_URL}/medicines/${id}`)
+    axios
+      .get(`${API_URL}/medicines/${id}`)
       .then((response) => setMedicine(response.data))
       .catch((err) => console.error(err));
 
-    axios.get(`${API_URL}/medicines`)
+    axios
+      .get(`${API_URL}/medicines`)
       .then((response) => setMedicines(response.data))
       .catch((err) => console.error(err));
   }, [id]);
 
+  // Suppression du médicament après confirmation dans le modal
   const handleDelete = async () => {
-    if (!window.confirm('Supprimer ce médicament ?')) return;
+    if (deleting) return;
 
-    const token = localStorage.getItem('token');
+    setDeleting(true);
+
+    const token = localStorage.getItem("token");
 
     try {
       await axios.delete(`${API_URL}/medicines/${id}`, {
         headers: {
-          Authorization: `Bearer ${token}`
-        }
+          Authorization: `Bearer ${token}`,
+        },
       });
 
-      navigate('/medicines');
+      setShowDeleteModal(false);
+      navigate("/medicines");
     } catch (err) {
       console.error(err);
-      alert('Erreur lors de la suppression');
+      alert("Erreur lors de la suppression du médicament.");
+      setDeleting(false);
     }
   };
 
@@ -529,21 +540,9 @@ export function MedicineDetail() {
     );
   }
 
-  const currentIndex = medicines.findIndex(
-    (item) => item.id === medicine.id
-  );
-
-  const previousMedicine =
-    currentIndex > 0 ? medicines[currentIndex - 1] : null;
-
-  const nextMedicine =
-    currentIndex >= 0 && currentIndex < medicines.length - 1
-      ? medicines[currentIndex + 1]
-      : null;
-
   const imageUrl = medicine.photo_url
     ? `${IMAGE_URL}/${medicine.photo_url}`
-    : 'https://via.placeholder.com/500x500?text=Pas+de+photo';
+    : "https://via.placeholder.com/500x500?text=Pas+de+photo";
 
   return (
     <Layout>
@@ -552,62 +551,71 @@ export function MedicineDetail() {
         {/* Fil d'Ariane */}
         <div className="mb-8">
           <p className="text-sm text-gray-500">
-            <Link
-              to="/medicines"
-              className="hover:text-gray-800"
-            >
-              Medicaments
+            <Link to="/medicines" className="hover:text-gray-800">
+              Médicaments
             </Link>
 
             <span className="mx-2">›</span>
 
             <span className="font-semibold text-gray-800">
-              Tous les details
+              Tous les détails
             </span>
           </p>
         </div>
 
-        {/* Image + informations */}
+        {/* Image et informations */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 items-start">
 
           {/* Image du médicament avec flèches désactivées */}
-<div className="flex items-center gap-4">
+          <div className="flex items-center gap-4">
 
-  <button
-    type="button"
-    disabled
-    className="text-5xl leading-none text-gray-300 cursor-not-allowed"
-    aria-label="Médicament précédent"
-  >
-    ‹
-  </button>
+            <button
+              type="button"
+              disabled
+              className="text-5xl leading-none text-gray-300 cursor-not-allowed"
+              aria-label="Médicament précédent"
+            >
+              ‹
+            </button>
 
-  <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-    <div className="w-full h-[300px] md:h-[360px] flex items-center justify-center">
-      <img
-        src={imageUrl}
-        alt={medicine.nom}
-        className="max-w-full max-h-full object-contain"
-      />
-    </div>
-  </div>
+            <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+              <div className="w-full h-[300px] md:h-[360px] flex items-center justify-center">
+                <img
+                  src={imageUrl}
+                  alt={medicine.nom}
+                  className="max-w-full max-h-full object-contain"
+                />
+              </div>
+            </div>
 
-  <button
-    type="button"
-    disabled
-    className="text-5xl leading-none text-gray-300 cursor-not-allowed"
-    aria-label="Médicament suivant"
-  >
-    ›
-  </button>
+            <button
+              type="button"
+              disabled
+              className="text-5xl leading-none text-gray-300 cursor-not-allowed"
+              aria-label="Médicament suivant"
+            >
+              ›
+            </button>
 
-</div>
-          {/* Informations */}
+          </div>
+
+          {/* Informations du médicament */}
           <div className="pt-2">
 
             <h1 className="text-3xl md:text-4xl font-bold text-gray-900 mb-8">
               {medicine.nom}
             </h1>
+
+            {medicine.code_medicament && (
+              <div className="mb-5">
+                <h2 className="text-base font-bold text-gray-900 mb-1">
+                  Code du médicament
+                </h2>
+                <p className="text-sm text-gray-600">
+                  {medicine.code_medicament}
+                </p>
+              </div>
+            )}
 
             {medicine.composition && (
               <div className="mb-5">
@@ -623,7 +631,7 @@ export function MedicineDetail() {
             {medicine.fabricant && (
               <div className="mb-5">
                 <h2 className="text-base font-bold text-gray-900 mb-1">
-                  Fabricant/commercant
+                  Fabricant / commerçant
                 </h2>
                 <p className="text-sm text-gray-600">
                   {medicine.fabricant}
@@ -656,36 +664,27 @@ export function MedicineDetail() {
             {/* Boutons d'action */}
             <div className="flex items-center gap-4 mt-6">
 
-              <Link
-                to={`/medicines/${medicine.id}`}
-                className="text-teal-600 hover:scale-110 transition"
-                title="Voir les détails"
-              >
-                
-              </Link>
-
               <button
                 type="button"
-                onClick={() =>
-                  navigate(`/medicines/${medicine.id}/edit`)
-                }
+                onClick={() => navigate(`/medicines/${id}/edit`)}
                 className="text-blue-600 hover:scale-110 transition"
                 title="Modifier"
+                aria-label="Modifier le médicament"
               >
                 ✏️
               </button>
 
               <button
                 type="button"
-                onClick={handleDelete}
+                onClick={() => setShowDeleteModal(true)}
                 className="text-red-600 hover:scale-110 transition"
                 title="Supprimer"
+                aria-label="Supprimer le médicament"
               >
                 🗑️
               </button>
 
             </div>
-
           </div>
         </div>
 
@@ -702,7 +701,7 @@ export function MedicineDetail() {
           </div>
         )}
 
-        {/* Dosage */}
+        {/* Dosage et posologie */}
         {medicine.dosage_posologie && (
           <div className="mt-10 max-w-6xl">
             <h2 className="text-xl font-bold text-gray-900 mb-4">
@@ -716,9 +715,80 @@ export function MedicineDetail() {
         )}
 
       </div>
+
+      {/* Modal de confirmation de suppression */}
+      {showDeleteModal && (
+        <div
+          className="fixed inset-0 z-50 flex items-center justify-center bg-black/50 p-4"
+          onClick={(e) => {
+            if (e.target === e.currentTarget && !deleting) {
+              setShowDeleteModal(false);
+            }
+          }}
+        >
+          <div
+            role="dialog"
+            aria-modal="true"
+            aria-labelledby="delete-modal-title"
+            className="w-full max-w-md rounded-2xl bg-white p-6 shadow-xl"
+          >
+            <div className="text-center">
+
+              <div className="mx-auto mb-4 flex h-16 w-16 items-center justify-center rounded-full bg-red-100 text-3xl">
+                🗑️
+              </div>
+
+              <h2
+                id="delete-modal-title"
+                className="text-xl font-bold text-gray-900"
+              >
+                Confirmer la suppression
+              </h2>
+
+              <p className="mt-3 text-gray-600">
+                Êtes-vous sûr de vouloir supprimer ce médicament ?
+              </p>
+
+              <p className="mt-2 font-semibold text-gray-900">
+                {medicine.nom}
+              </p>
+
+              <p className="mt-2 text-sm text-gray-500">
+                Cette action est irréversible.
+              </p>
+
+            </div>
+
+            <div className="mt-6 flex justify-center gap-3">
+
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={() => setShowDeleteModal(false)}
+                className="rounded-lg border border-gray-300 px-5 py-2 text-gray-700 hover:bg-gray-100 disabled:opacity-50"
+              >
+                Annuler
+              </button>
+
+              <button
+                type="button"
+                disabled={deleting}
+                onClick={handleDelete}
+                className="rounded-lg bg-red-600 px-5 py-2 text-white hover:bg-red-700 disabled:cursor-not-allowed disabled:opacity-50"
+              >
+                {deleting ? "Suppression..." : "Oui, supprimer"}
+              </button>
+
+            </div>
+          </div>
+        </div>
+      )}
+
     </Layout>
   );
 }
+
+
 export function EditMedicine() {
   const { id } = useParams();
   const navigate = useNavigate();
