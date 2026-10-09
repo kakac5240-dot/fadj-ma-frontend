@@ -185,9 +185,16 @@ export function Register() {
             Un mot de passe temporaire vous sera envoye par email.
           </p>
 
-          <button type="submit" className="bg-teal-400 text-slate-900 font-medium w-full py-2 rounded">
-            S'inscrire
-          </button>
+          
+<button
+  type="submit"
+  disabled={loading}
+  className="bg-teal-400 text-slate-900 font-medium w-full py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+>
+  {loading ? "Inscription en cours..." : "S'inscrire"}
+</button>
+
+
         </form>
       </div>
     </div>
