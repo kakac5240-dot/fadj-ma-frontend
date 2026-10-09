@@ -570,57 +570,38 @@ export function MedicineDetail() {
         {/* Image + informations */}
         <div className="grid grid-cols-1 lg:grid-cols-[1fr_1.1fr] gap-10 items-start">
 
-          {/* Image */}
-          <div className="flex items-center gap-4">
+          {/* Image du médicament avec flèches désactivées */}
+<div className="flex items-center gap-4">
 
-            <button
-              type="button"
-              disabled={!previousMedicine}
-              onClick={() => {
-                if (previousMedicine) {
-                  navigate(`/medicines/${previousMedicine.id}`);
-                }
-              }}
-              className={`text-5xl leading-none transition ${
-                previousMedicine
-                  ? 'text-gray-900 hover:scale-110'
-                  : 'text-gray-300 cursor-not-allowed'
-              }`}
-              aria-label="Medicament precedent"
-            >
-              ‹
-            </button>
+  <button
+    type="button"
+    disabled
+    className="text-5xl leading-none text-gray-300 cursor-not-allowed"
+    aria-label="Médicament précédent"
+  >
+    ‹
+  </button>
 
-            <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
-              <div className="w-full h-[300px] md:h-[360px] flex items-center justify-center">
-                <img
-                  src={imageUrl}
-                  alt={medicine.nom}
-                  className="max-w-full max-h-full object-contain"
-                />
-              </div>
-            </div>
+  <div className="flex-1 bg-white rounded-xl shadow-sm border border-gray-100 p-5">
+    <div className="w-full h-[300px] md:h-[360px] flex items-center justify-center">
+      <img
+        src={imageUrl}
+        alt={medicine.nom}
+        className="max-w-full max-h-full object-contain"
+      />
+    </div>
+  </div>
 
-            <button
-              type="button"
-              disabled={!nextMedicine}
-              onClick={() => {
-                if (nextMedicine) {
-                  navigate(`/medicines/${nextMedicine.id}`);
-                }
-              }}
-              className={`text-5xl leading-none transition ${
-                nextMedicine
-                  ? 'text-gray-900 hover:scale-110'
-                  : 'text-gray-300 cursor-not-allowed'
-              }`}
-              aria-label="Medicament suivant"
-            >
-              ›
-            </button>
+  <button
+    type="button"
+    disabled
+    className="text-5xl leading-none text-gray-300 cursor-not-allowed"
+    aria-label="Médicament suivant"
+  >
+    ›
+  </button>
 
-          </div>
-
+</div>
           {/* Informations */}
           <div className="pt-2">
 
