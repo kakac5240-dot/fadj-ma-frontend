@@ -3,6 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Layout } from '../components/Layout'
 const API_URL = 'https://fadj-ma-api.onrender.com/api';
+const [loading, setLoading] = useState(false);
 function AuthHeader({ active }) {
   return (
     <div className="bg-slate-800 py-6 px-8">
