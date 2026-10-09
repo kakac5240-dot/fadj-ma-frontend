@@ -3,7 +3,7 @@ import { useNavigate, useParams, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Layout } from '../components/Layout'
 const API_URL = 'https://fadj-ma-api.onrender.com/api';
-const [loading, setLoading] = useState(false);
+
 function AuthHeader({ active }) {
   return (
     <div className="bg-slate-800 py-6 px-8">
@@ -95,6 +95,7 @@ const handleSubmit = async (e) => {
   );
 }
 
+
 export function Register() {
   const [genre, setGenre] = useState('');
   const [prenom, setPrenom] = useState('');
@@ -105,21 +106,44 @@ export function Register() {
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
   const [success, setSuccess] = useState(false);
+  const [loading, setLoading] = useState(false);
+
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
+
+    if (loading) return;
+
+    setError('');
+    setSuccess(false);
+    setLoading(true);
+
     try {
       await axios.post(`${API_URL}/auth/register`, {
-        name: `${prenom} ${name}`,
-        email,
+        name: `${prenom.trim()} ${name.trim()}`.trim(),
+        email: email.trim(),
         genre,
-        date_naissance: jour && mois && annee ? `${jour}/${mois}/${annee}` : null
+        date_naissance:
+          jour && mois && annee
+            ? `${jour}/${mois}/${annee}`
+            : null,
       });
+
       setSuccess(true);
-      setTimeout(() => navigate('/'), 2500);
+
+      setTimeout(() => {
+        navigate('/');
+      }, 2500);
     } catch (err) {
-      setError(err.response?.data?.message || "Erreur lors de l'inscription");
+      console.error("Erreur lors de l'inscription :", err);
+
+      setError(
+        err.response?.data?.message ||
+        "Erreur lors de l'inscription. Vérifiez vos informations et réessayez."
+      );
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -127,54 +151,125 @@ export function Register() {
     <div className="flex items-center justify-center min-h-screen bg-gray-100 py-8">
       <div className="bg-white rounded-lg shadow-md w-full max-w-lg overflow-hidden">
         <AuthHeader active="register" />
+
         <form onSubmit={handleSubmit} className="p-8">
-          {error && <p className="text-red-500 mb-3">{error}</p>}
-          {success && (
-            <p className="text-green-600 mb-3">
-              Compte cree ! Votre mot de passe a ete envoye par email. Redirection...
+          {error && (
+            <p className="text-red-500 mb-3">
+              {error}
             </p>
           )}
 
-          <p className="font-medium mb-2">Vos coordonnees</p>
+          {success && (
+            <p className="text-green-600 mb-3">
+              Compte créé ! Votre mot de passe a été envoyé par email. Redirection...
+            </p>
+          )}
+
+          <p className="font-medium mb-2">
+            Vos coordonnées
+          </p>
+
           <div className="flex gap-6 mb-4">
             <label className="flex items-center gap-2">
-              <input type="radio" name="genre" value="Homme" checked={genre === 'Homme'} onChange={(e) => setGenre(e.target.value)} />
+              <input
+                type="radio"
+                name="genre"
+                value="Homme"
+                checked={genre === 'Homme'}
+                onChange={(e) => setGenre(e.target.value)}
+              />
               Homme
             </label>
+
             <label className="flex items-center gap-2">
-              <input type="radio" name="genre" value="Femme" checked={genre === 'Femme'} onChange={(e) => setGenre(e.target.value)} />
+              <input
+                type="radio"
+                name="genre"
+                value="Femme"
+                checked={genre === 'Femme'}
+                onChange={(e) => setGenre(e.target.value)}
+              />
               Femme
             </label>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block font-medium mb-1">Prenom</label>
-              <input value={prenom} onChange={(e) => setPrenom(e.target.value)} className="border p-2 w-full rounded" />
+              <label className="block font-medium mb-1">
+                Prénom
+              </label>
+
+              <input
+                type="text"
+                value={prenom}
+                onChange={(e) => setPrenom(e.target.value)}
+                className="border p-2 w-full rounded"
+              />
             </div>
+
             <div>
-              <label className="block font-medium mb-1">Nom</label>
-              <input value={name} onChange={(e) => setName(e.target.value)} className="border p-2 w-full rounded" />
+              <label className="block font-medium mb-1">
+                Nom
+              </label>
+
+              <input
+                type="text"
+                value={name}
+                onChange={(e) => setName(e.target.value)}
+                className="border p-2 w-full rounded"
+              />
             </div>
           </div>
 
-          <label className="block font-medium mb-1">Date de naissance</label>
+          <label className="block font-medium mb-1">
+            Date de naissance
+          </label>
+
           <div className="grid grid-cols-3 gap-4 mb-4">
-            <select value={jour} onChange={(e) => setJour(e.target.value)} className="border p-2 rounded">
+            <select
+              value={jour}
+              onChange={(e) => setJour(e.target.value)}
+              className="border p-2 rounded"
+            >
               <option value="">JJ</option>
-              {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => <option key={d} value={d}>{d}</option>)}
+              {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
+                <option key={d} value={d}>
+                  {d}
+                </option>
+              ))}
             </select>
-            <select value={mois} onChange={(e) => setMois(e.target.value)} className="border p-2 rounded">
+
+            <select
+              value={mois}
+              onChange={(e) => setMois(e.target.value)}
+              className="border p-2 rounded"
+            >
               <option value="">MM</option>
-              {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => <option key={m} value={m}>{m}</option>)}
+              {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
+                <option key={m} value={m}>
+                  {m}
+                </option>
+              ))}
             </select>
-            <select value={annee} onChange={(e) => setAnnee(e.target.value)} className="border p-2 rounded">
+
+            <select
+              value={annee}
+              onChange={(e) => setAnnee(e.target.value)}
+              className="border p-2 rounded"
+            >
               <option value="">AAAA</option>
-              {Array.from({ length: 80 }, (_, i) => 2026 - i).map((y) => <option key={y} value={y}>{y}</option>)}
+              {Array.from({ length: 80 }, (_, i) => 2026 - i).map((y) => (
+                <option key={y} value={y}>
+                  {y}
+                </option>
+              ))}
             </select>
           </div>
 
-          <label className="block font-medium mb-1">E-mail</label>
+          <label className="block font-medium mb-1">
+            E-mail
+          </label>
+
           <input
             type="email"
             value={email}
@@ -183,24 +278,23 @@ export function Register() {
           />
 
           <p className="text-sm text-gray-500 mb-4">
-            Un mot de passe temporaire vous sera envoye par email.
+            Un mot de passe temporaire vous sera envoyé par email.
           </p>
 
-          
-<button
-  type="submit"
-  disabled={loading}
-  className="bg-teal-400 text-slate-900 font-medium w-full py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
->
-  {loading ? "Inscription en cours..." : "S'inscrire"}
-</button>
-
-
+          <button
+            type="submit"
+            disabled={loading || success}
+            className="bg-teal-400 text-slate-900 font-medium w-full py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
+          >
+            {loading ? "Inscription en cours..." : "S'inscrire"}
+          </button>
         </form>
       </div>
     </div>
   );
 }
+
+
 function telechargerRapport(stats) {
   const lignes = [
     ['Indicateur', 'Valeur'],
