@@ -1,5 +1,5 @@
 import { useState, useEffect } from 'react';
-import { useNavigate, useParams, Link } from 'react-router-dom';
+import { useNavigate, useParams, useLocation, Link } from 'react-router-dom';
 import axios from 'axios';
 import { Layout } from '../components/Layout'
 const API_URL = 'https://fadj-ma-api.onrender.com/api';
@@ -36,22 +36,26 @@ export function Login() {
   const [showPassword, setShowPassword] = useState(false);
   const [error, setError] = useState('');
   const navigate = useNavigate();
-
   const [loading, setLoading] = useState(false);
 
-const handleSubmit = async (e) => {
-  e.preventDefault();
-  setLoading(true);
-  try {
-    const response = await axios.post(`${API_URL}/auth/login`, { email, password });
-    localStorage.setItem('token', response.data.token);
-    navigate('/dashboard');
-  } catch (err) {
-    setError('Email ou mot de passe incorrect');
-  } finally {
-    setLoading(false);
-  }
-};
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    setError('');
+    setLoading(true);
+    try {
+      const response = await axios.post(`${API_URL}/auth/login`, { email, password });
+      localStorage.setItem('token', response.data.token);
+      navigate('/dashboard');
+    } catch (err) {
+      if (err.response?.status === 403) {
+        navigate('/verify', { state: { email } });
+        return;
+      }
+      setError('Email ou mot de passe incorrect');
+    } finally {
+      setLoading(false);
+    }
+  };
 
   return (
     <div className="flex items-center justify-center min-h-screen bg-gray-100 py-8">
@@ -84,17 +88,18 @@ const handleSubmit = async (e) => {
               {showPassword ? '🙈' : '👁️'}
             </button>
           </div>
-          <p className="text-sm text-teal-600 text-right mb-4">Mot de passe oublie ?</p>
+          <Link to="/forgot-password" className="text-sm text-teal-600 text-right block mb-4">
+            Mot de passe oublie ?
+          </Link>
 
-         <button type="submit" disabled={loading} className="bg-teal-400 text-slate-900 font-medium w-full py-2 rounded disabled:opacity-60">
-  {loading ? 'Connexion en cours...' : 'Se connecter'}
-</button>
+          <button type="submit" disabled={loading} className="bg-teal-400 text-slate-900 font-medium w-full py-2 rounded disabled:opacity-60">
+            {loading ? 'Connexion en cours...' : 'Se connecter'}
+          </button>
         </form>
       </div>
     </div>
   );
 }
-
 
 export function Register() {
   const [genre, setGenre] = useState('');
@@ -105,18 +110,13 @@ export function Register() {
   const [annee, setAnnee] = useState('');
   const [email, setEmail] = useState('');
   const [error, setError] = useState('');
-  const [success, setSuccess] = useState(false);
   const [loading, setLoading] = useState(false);
-
   const navigate = useNavigate();
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-
     if (loading) return;
-
     setError('');
-    setSuccess(false);
     setLoading(true);
 
     try {
@@ -124,21 +124,13 @@ export function Register() {
         name: `${prenom.trim()} ${name.trim()}`.trim(),
         email: email.trim(),
         genre,
-        date_naissance:
-          jour && mois && annee
-            ? `${jour}/${mois}/${annee}`
-            : null,
+        date_naissance: jour && mois && annee ? `${jour}/${mois}/${annee}` : null,
       });
-
-      setSuccess(true);
-
-      setTimeout(() => {
-        navigate('/');
-      }, 2500);
+      navigate('/verify', { state: { email: email.trim() } });
     } catch (err) {
       console.error("Erreur lors de l'inscription :", err);
-
       setError(
+        err.response?.data?.errors?.email?.[0] ||
         err.response?.data?.message ||
         "Erreur lors de l'inscription. Vérifiez vos informations et réessayez."
       );
@@ -153,123 +145,55 @@ export function Register() {
         <AuthHeader active="register" />
 
         <form onSubmit={handleSubmit} className="p-8">
-          {error && (
-            <p className="text-red-500 mb-3">
-              {error}
-            </p>
-          )}
+          {error && <p className="text-red-500 mb-3">{error}</p>}
 
-          {success && (
-            <p className="text-green-600 mb-3">
-              Compte créé ! Votre mot de passe a été envoyé par email. Redirection...
-            </p>
-          )}
-
-          <p className="font-medium mb-2">
-            Vos coordonnées
-          </p>
+          <p className="font-medium mb-2">Vos coordonnées</p>
 
           <div className="flex gap-6 mb-4">
             <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="genre"
-                value="Homme"
-                checked={genre === 'Homme'}
-                onChange={(e) => setGenre(e.target.value)}
-              />
+              <input type="radio" name="genre" value="Homme" checked={genre === 'Homme'} onChange={(e) => setGenre(e.target.value)} />
               Homme
             </label>
-
             <label className="flex items-center gap-2">
-              <input
-                type="radio"
-                name="genre"
-                value="Femme"
-                checked={genre === 'Femme'}
-                onChange={(e) => setGenre(e.target.value)}
-              />
+              <input type="radio" name="genre" value="Femme" checked={genre === 'Femme'} onChange={(e) => setGenre(e.target.value)} />
               Femme
             </label>
           </div>
 
           <div className="grid grid-cols-2 gap-4 mb-4">
             <div>
-              <label className="block font-medium mb-1">
-                Prénom
-              </label>
-
-              <input
-                type="text"
-                value={prenom}
-                onChange={(e) => setPrenom(e.target.value)}
-                className="border p-2 w-full rounded"
-              />
+              <label className="block font-medium mb-1">Prénom</label>
+              <input type="text" value={prenom} onChange={(e) => setPrenom(e.target.value)} className="border p-2 w-full rounded" />
             </div>
-
             <div>
-              <label className="block font-medium mb-1">
-                Nom
-              </label>
-
-              <input
-                type="text"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                className="border p-2 w-full rounded"
-              />
+              <label className="block font-medium mb-1">Nom</label>
+              <input type="text" value={name} onChange={(e) => setName(e.target.value)} className="border p-2 w-full rounded" />
             </div>
           </div>
 
-          <label className="block font-medium mb-1">
-            Date de naissance
-          </label>
-
+          <label className="block font-medium mb-1">Date de naissance</label>
           <div className="grid grid-cols-3 gap-4 mb-4">
-            <select
-              value={jour}
-              onChange={(e) => setJour(e.target.value)}
-              className="border p-2 rounded"
-            >
+            <select value={jour} onChange={(e) => setJour(e.target.value)} className="border p-2 rounded">
               <option value="">JJ</option>
               {Array.from({ length: 31 }, (_, i) => i + 1).map((d) => (
-                <option key={d} value={d}>
-                  {d}
-                </option>
+                <option key={d} value={d}>{d}</option>
               ))}
             </select>
-
-            <select
-              value={mois}
-              onChange={(e) => setMois(e.target.value)}
-              className="border p-2 rounded"
-            >
+            <select value={mois} onChange={(e) => setMois(e.target.value)} className="border p-2 rounded">
               <option value="">MM</option>
               {Array.from({ length: 12 }, (_, i) => i + 1).map((m) => (
-                <option key={m} value={m}>
-                  {m}
-                </option>
+                <option key={m} value={m}>{m}</option>
               ))}
             </select>
-
-            <select
-              value={annee}
-              onChange={(e) => setAnnee(e.target.value)}
-              className="border p-2 rounded"
-            >
+            <select value={annee} onChange={(e) => setAnnee(e.target.value)} className="border p-2 rounded">
               <option value="">AAAA</option>
               {Array.from({ length: 80 }, (_, i) => 2026 - i).map((y) => (
-                <option key={y} value={y}>
-                  {y}
-                </option>
+                <option key={y} value={y}>{y}</option>
               ))}
             </select>
           </div>
 
-          <label className="block font-medium mb-1">
-            E-mail
-          </label>
-
+          <label className="block font-medium mb-1">E-mail</label>
           <input
             type="email"
             value={email}
@@ -278,12 +202,12 @@ export function Register() {
           />
 
           <p className="text-sm text-gray-500 mb-4">
-            Un mot de passe temporaire vous sera envoyé par email.
+            Un code de vérification vous sera envoyé par email.
           </p>
 
           <button
             type="submit"
-            disabled={loading || success}
+            disabled={loading}
             className="bg-teal-400 text-slate-900 font-medium w-full py-2 rounded disabled:opacity-50 disabled:cursor-not-allowed"
           >
             {loading ? "Inscription en cours..." : "S'inscrire"}
@@ -293,7 +217,206 @@ export function Register() {
     </div>
   );
 }
+export function VerifyOtp() {
+  const location = useLocation();
+  const navigate = useNavigate();
+  const email = location.state?.email || '';
+  const [code, setCode] = useState('');
+  const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
+  const [loading, setLoading] = useState(false);
+  const [done, setDone] = useState(false);
 
+  useEffect(() => {
+    if (!email) navigate('/register');
+  }, [email, navigate]);
+
+  const handleSubmit = async (e) => {
+    e.preventDefault();
+    if (loading || done) return;
+    setError('');
+    setInfo('');
+    setLoading(true);
+    try {
+      await axios.post(`${API_URL}/auth/verify-otp`, { email, code: code.trim() });
+      setDone(true);
+      setInfo('Compte validé ! Votre mot de passe temporaire a été envoyé par email. Redirection...');
+      setTimeout(() => navigate('/'), 2500);
+    } catch (err) {
+      setError(
+        err.response?.data?.errors?.code?.[0] ||
+        err.response?.data?.message ||
+        'Erreur lors de la vérification'
+      );
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const renvoyer = async () => {
+    setError('');
+    setInfo('');
+    try {
+      await axios.post(`${API_URL}/auth/resend-otp`, { email });
+      setInfo('Un nouveau code a été envoyé.');
+    } catch {
+      setError("Impossible d'envoyer le code. Réessayez dans un instant.");
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 py-8">
+      <div className="bg-white rounded-lg shadow-md w-full max-w-md overflow-hidden">
+        <AuthHeader active="register" />
+        <form onSubmit={handleSubmit} className="p-8">
+          <p className="font-medium mb-1">Vérification de votre email</p>
+          <p className="text-sm text-gray-500 mb-4">
+            Un code à 6 chiffres a été envoyé à {email}
+          </p>
+
+          {error && <p className="text-red-500 mb-3">{error}</p>}
+          {info && <p className="text-green-600 mb-3">{info}</p>}
+
+          <input
+            type="text"
+            inputMode="numeric"
+            maxLength={6}
+            value={code}
+            onChange={(e) => setCode(e.target.value)}
+            placeholder="000000"
+            className="border p-2 w-full mb-4 rounded text-center text-xl tracking-widest"
+          />
+
+          <button
+            type="submit"
+            disabled={loading || done}
+            className="bg-teal-400 text-slate-900 font-medium w-full py-2 rounded disabled:opacity-60"
+          >
+            {loading ? 'Vérification...' : 'Valider'}
+          </button>
+
+          <button type="button" onClick={renvoyer} className="text-sm text-teal-600 w-full mt-3">
+            Renvoyer le code
+          </button>
+        </form>
+      </div>
+    </div>
+  );
+}
+
+export function ForgotPassword() {
+  const navigate = useNavigate();
+  const [step, setStep] = useState(1);
+  const [email, setEmail] = useState('');
+  const [code, setCode] = useState('');
+  const [password, setPassword] = useState('');
+  const [confirm, setConfirm] = useState('');
+  const [error, setError] = useState('');
+  const [info, setInfo] = useState('');
+  const [loading, setLoading] = useState(false);
+
+  const envoyerCode = async (e) => {
+    e.preventDefault();
+    setError('');
+    setInfo('');
+    setLoading(true);
+    try {
+      await axios.post(`${API_URL}/auth/forgot-password`, { email: email.trim() });
+      setInfo('Si ce compte existe, un code vient de vous être envoyé par email.');
+      setStep(2);
+    } catch {
+      setError('Erreur, réessayez.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  const reinitialiser = async (e) => {
+    e.preventDefault();
+    setError('');
+    setInfo('');
+    setLoading(true);
+    try {
+      await axios.post(`${API_URL}/auth/reset-password`, {
+        email: email.trim(),
+        code: code.trim(),
+        password,
+        password_confirmation: confirm,
+      });
+      setInfo('Mot de passe modifié ! Redirection...');
+      setTimeout(() => navigate('/'), 2000);
+    } catch (err) {
+      const errs = err.response?.data?.errors;
+      setError(errs ? Object.values(errs)[0][0] : 'Erreur, réessayez.');
+    } finally {
+      setLoading(false);
+    }
+  };
+
+  return (
+    <div className="flex items-center justify-center min-h-screen bg-gray-100 py-8">
+      <div className="bg-white rounded-lg shadow-md w-full max-w-md overflow-hidden">
+        <AuthHeader active="login" />
+        <form onSubmit={step === 1 ? envoyerCode : reinitialiser} className="p-8">
+          <p className="font-medium mb-4">Mot de passe oublié</p>
+
+          {error && <p className="text-red-500 mb-3">{error}</p>}
+          {info && <p className="text-green-600 mb-3">{info}</p>}
+
+          {step === 1 ? (
+            <>
+              <label className="block font-medium mb-1">Adresse e-mail</label>
+              <input
+                type="email"
+                value={email}
+                onChange={(e) => setEmail(e.target.value)}
+                className="border p-2 w-full mb-4 rounded"
+              />
+            </>
+          ) : (
+            <>
+              <input
+                type="text"
+                inputMode="numeric"
+                maxLength={6}
+                value={code}
+                onChange={(e) => setCode(e.target.value)}
+                placeholder="Code à 6 chiffres"
+                className="border p-2 w-full mb-3 rounded"
+              />
+              <input
+                type="password"
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+                placeholder="Nouveau mot de passe (8 caractères minimum)"
+                className="border p-2 w-full mb-3 rounded"
+              />
+              <input
+                type="password"
+                value={confirm}
+                onChange={(e) => setConfirm(e.target.value)}
+                placeholder="Confirmer le mot de passe"
+                className="border p-2 w-full mb-4 rounded"
+              />
+            </>
+          )}
+
+          <button
+            type="submit"
+            disabled={loading}
+            className="bg-teal-400 text-slate-900 font-medium w-full py-2 rounded disabled:opacity-60"
+          >
+            {loading ? 'Patientez...' : step === 1 ? 'Envoyer le code' : 'Changer le mot de passe'}
+          </button>
+
+          <Link to="/" className="text-sm text-teal-600 block text-center mt-3">
+            Retour à la connexion
+          </Link>
+        </form>
+      </div>
+    </div>
+  );
+}
 
 function telechargerRapport(stats) {
   const lignes = [
