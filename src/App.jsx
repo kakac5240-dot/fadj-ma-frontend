@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
-import { Login, Register, Dashboard, Medicines, MedicineDetail, EditMedicine, NewMedicine } from './pages/Login';
+import { Login, Register, VerifyOtp, Dashboard, Medicines, MedicineDetail, EditMedicine, NewMedicine } from './pages/Login';
 import { ProtectedRoute } from './components/ProtectedRoute';
 
 function App() {
