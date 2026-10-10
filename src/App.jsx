@@ -1,7 +1,7 @@
 import { BrowserRouter, Routes, Route } from 'react-router-dom';
 import { Login, Register, Dashboard, Medicines, MedicineDetail, EditMedicine, NewMedicine } from './pages/Login';
 import { ProtectedRoute } from './components/ProtectedRoute';
- import { Login, Register, VerifyOtp, ForgotPassword /* + tes autres imports */ } from './pages/Login';
+
 function App() {
   return (
     <BrowserRouter>
