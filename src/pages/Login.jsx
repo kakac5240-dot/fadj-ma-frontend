@@ -516,7 +516,7 @@ export function Dashboard() {
           <div className="bg-white border-2 border-red-400 rounded overflow-hidden">
             <div className="p-4">
               <p className="text-2xl mb-2">⚠️</p>
-              <p className="text-xl font-bold">01</p>
+              <p className="text-xl font-bold"><CountUp end={stats?.penurieMedicaments ?? 0} pad={2} /></p>
               <p className="text-sm text-gray-500">Penurie de medicaments</p>
             </div>
             <div className="bg-red-100 text-red-700 text-sm px-4 py-2">Resoudre maintenant »</div>
