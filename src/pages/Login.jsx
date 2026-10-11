@@ -489,7 +489,7 @@ export function Dashboard() {
           <div className="bg-white border-2 border-green-400 rounded overflow-hidden">
             <div className="p-4">
               <img src="https://fadj-ma-api.onrender.com/images/icon-inventaire.png" alt="" className="w-8 h-8 mb-2" />
-              <p className="text-xl font-bold">Bien</p>
+              <p className="text-xl font-bold">{stats?.statutInventaire ?? 'Bien'}</p>
               <p className="text-sm text-gray-500">Statut de l'inventaire</p>
             </div>
             <div className="bg-green-100 text-green-700 text-sm px-4 py-2">Afficher le rapport detaille »</div>
@@ -531,7 +531,7 @@ export function Dashboard() {
             </div>
             <div className="flex gap-20">
               <div>
-                <p className="text-2xl font-bold"><CountUp end={298} /></p>
+                <CountUp end={stats?.medicamentsDisponibles ?? 0} />
                 <p className="text-sm text-gray-500">Nombre total de medicaments</p>
               </div>
               <div>
