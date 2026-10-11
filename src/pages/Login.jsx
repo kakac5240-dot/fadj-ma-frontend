@@ -439,8 +439,7 @@ function telechargerRapport(stats) {
   URL.revokeObjectURL(url);
 }
 
-export function Dashboard() {
-  function CountUp({ end, duration = 1200, pad = 0 }) {
+function CountUp({ end, duration = 1200, pad = 0 }) {
   const [value, setValue] = useState(0);
 
   useEffect(() => {
@@ -464,6 +463,8 @@ export function Dashboard() {
 
   return <>{formatted}</>;
 }
+
+export function Dashboard() {
   const [stats, setStats] = useState(null);
 
   useEffect(() => {
@@ -507,7 +508,7 @@ export function Dashboard() {
           <div className="bg-white border-2 border-blue-400 rounded overflow-hidden">
             <div className="p-4">
               <img src="https://fadj-ma-api.onrender.com/images/icon-medicaments.png" alt="" className="w-8 h-8 mb-2" />
-              <p className="text-xl font-bold"><CountUp end={298} /></p>
+              <p className="text-xl font-bold"><CountUp end={stats?.medicamentsDisponibles ?? 0} /></p>
               <p className="text-sm text-gray-500">Medicaments disponibles</p>
             </div>
             <div className="bg-blue-100 text-blue-700 text-sm px-4 py-2">Visiter l'inventaire »</div>
@@ -531,11 +532,11 @@ export function Dashboard() {
             </div>
             <div className="flex gap-20">
               <div>
-                <CountUp end={stats?.medicamentsDisponibles ?? 0} />
+                <p className="text-2xl font-bold"><CountUp end={stats?.totalMedicaments ?? 0} /></p>
                 <p className="text-sm text-gray-500">Nombre total de medicaments</p>
               </div>
               <div>
-                <p className="text-2xl font-bold"><CountUp end={24} /></p>
+                <p className="text-2xl font-bold"><CountUp end={stats?.groupesMedicaments ?? 0} /></p>
                 <p className="text-sm text-gray-500">Groupes de medecine</p>
               </div>
             </div>
